@@ -109,6 +109,7 @@ MemoryStore.prototype.get = function get(sessionId, callback) {
 
 /**
  * Commit the given session associated with the given sessionId to the store.
+ * The readonly variable is checked. If it exists, it will not be saved in session store.
  *
  * @param {string} sessionId
  * @param {object} session
@@ -117,8 +118,12 @@ MemoryStore.prototype.get = function get(sessionId, callback) {
  */
 
 MemoryStore.prototype.set = function set(sessionId, session, callback) {
-  this.sessions[sessionId] = JSON.stringify(session)
-  callback && defer(callback)
+  if (session.readonly && this.sessions[sessionId]){
+    callback && defer(callback, null);
+  }else{
+    this.sessions[sessionId] = JSON.stringify(session)
+    callback && defer(callback);
+  }
 }
 
 /**
